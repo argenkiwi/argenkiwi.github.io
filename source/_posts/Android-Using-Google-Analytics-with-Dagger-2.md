@@ -1,5 +1,6 @@
 title: 'Android: Using Google Analytics with Dagger 2'
 date: 2015-07-26 07:53:25
+comments: true
 tags:
 - Android
 - Dagger2
