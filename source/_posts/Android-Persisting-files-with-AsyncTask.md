@@ -3,8 +3,10 @@ date: 2015-08-12 08:09:53
 tags:
 - Android
 - AsyncTask
+- Retrofit
+- Gson
 ---
-I would like to share an interesting approach to the use of `AsyncTask` for long running operations that I bumped into a few days ago. As an example, I will show you how to write to and read from a file while still handling the possible exceptions transparently.
+I would like to share an interesting approach to the use of `AsyncTask` for long running operations that [I bumped into](http://stackoverflow.com/a/6312491/495673) a few days ago. As an example, I will show you how to write to and read from a file while still handling the possible exceptions transparently.
 
 AsyncTaskResult
 ---------------
@@ -38,7 +40,7 @@ public class AsyncTaskResult<T> {
 }
 ```
 
-`T` represents the type of the expected result. The method `isError()` will help us know if the AsyncTask finished properly or not. We could also add a generic type for `getError()` if we expected a particular type of `Exception`.
+`T` represents the type of the expected result. The method `isError()` will help us know if the AsyncTask finished properly or not. We could also add a second generic type if we expect a particular type of `Exception` to be returned (e.g.: `IOException`).
 
 Writing to a file
 -----------------
@@ -63,7 +65,7 @@ new AsyncTask<Response, Void, AsyncTaskResult>() {
             return new AsyncTaskResult(null);
         } catch (IOException e) {
             Log.d(TAG, "I/O Exception.", e);
-            return new AsyncTaskResult<>(e);
+            return new AsyncTaskResult(e);
         }
     }
 
@@ -77,12 +79,12 @@ new AsyncTask<Response, Void, AsyncTaskResult>() {
 }.execute(response);
 ```
 
-`FILE_PATH` is a constant that represents the path of the file. `mContext` is a reference to an Android `Context`, which we will need to perform File I/O operations. In the example above, the `AsyncTask` takes a `Response` from a network call (in this case a [Retrofit](http://square.github.io/retrofit/) `Response` object) and returns an `AsyncTaskResult`. Notice I did not assign a type to the `AsyncTaskResult`. In this case we only want to know if the transaction was successful. Therefore, we create an `AsyncTaskResult` passing `null` to its constructor if we were successful. `onError` and `onSuccess` are methods you need to implement to handle the possible results.
+In the example above, the `AsyncTask` takes a `Response` from a network call (in this case a [Retrofit](http://square.github.io/retrofit/) `Response` object) and returns an `AsyncTaskResult`. `FILE_PATH` is a constant that represents the path of the file. `mContext` is a reference to an Android `Context`, which we will need to perform File I/O operations. Notice I did not assign a type to the `AsyncTaskResult`. In this case we only want to know if the transaction was successful. In that case, we pass `null` to its constructor. `onError` and `onSuccess` are methods you need to implement to handle the possible results.
 
 Reading from a file
 -------------------
 
-Finally, it's time to read from the file we created/updated. Let's create another `AsyncTask` which will read from a file and return a result. We will assume we have a `MyDTO` class which can populate by reading from a JSON string.
+Finally, it's time to read from the file we created/updated. Let's create another `AsyncTask` which will read from that file and return a result. We will assume our file contains a JSON string that we can parse into a `MyDTO` object.
 
 ```Java
 new AsyncTask<Void, Void, AsyncTaskResult<MyDTO>() {
@@ -117,4 +119,4 @@ Conclusion
 
 There are many ways of running time consuming tasks outside the UI thread. `AsyncTask` is a well known utility class provided by the Android framework. By wrapping the result into `AsyncTaskResult` we can elegantly handle success and failure scenarios.
 
-I hope you find this tip useful and happy coding!
+I hope you find this tip useful. Happy coding!
