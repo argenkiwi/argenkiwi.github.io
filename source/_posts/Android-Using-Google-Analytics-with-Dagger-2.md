@@ -9,7 +9,7 @@ tags:
 I have been teaching myself how to use [Dagger 2](http://google.github.io/dagger/) for Android development. I found out that the best place to start is by letting this library manage the singletons of your application. As an example, I would like to show you how to add Google Analytics using Dagger 2.
 
 Setup
-------------
+-----
 
 Lets modify our application's build.gradle file in order to include Dagger 2 and Google Analytics in our project:
 
