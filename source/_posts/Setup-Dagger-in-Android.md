@@ -6,7 +6,7 @@ tags:
 ---
 Nowadays I use [Dagger](http://google.github.io/dagger/), the dependency injection library, in most of my projects. Every time I have to set it up on a new project I struggle to find a quick guide on how to just do that. Therefore, I decide to write one.
 
-Fist, let's update our *project's* `build.gradle` file to include [android-apt](https://bitbucket.org/hvisser/android-apt) as one of its dependencies:
+Fist, let's update our **project's** `build.gradle` file to include [android-apt](https://bitbucket.org/hvisser/android-apt) as one of its dependencies:
 ```Java
 ...
 buildscript {
@@ -22,7 +22,7 @@ buildscript {
 ...
 ```
 
-Next, update you *app's* `build.gradle` to include the `android-apt` plugin and the dependecies for _Dagger_ and _JavaX annotations_.
+Next, update you **app's** `build.gradle` to include the `android-apt` plugin and the dependecies for _Dagger_ and _JavaX annotations_.
 
 ```Java
 apply plugin: 'com.android.application'
@@ -39,7 +39,7 @@ dependencies {
 }
 ```
 
-*Note:* As I was writing this post I realised I could remove a dependency that was previously needed to make _Dagger_ work on _Android_. If you have trouble compiling you project, try adding the following to your dependencies:
+**Note:** As I was writing this post I realised I could remove a dependency that was previously needed to make _Dagger_ work on _Android_. If you have trouble compiling you project, try adding the following to your dependencies:
 
 ```Java
 dependecies {
