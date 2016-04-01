@@ -22,7 +22,7 @@ buildscript {
 ...
 ```
 
-Next, update you **app's** `build.gradle` to include the `android-apt` plugin and the dependecies for _Dagger_ and _JavaX annotations_.
+Next, update you **app's** `build.gradle` to include the `android-apt` plugin and the dependecies for _Dagger_.
 
 ```Java
 apply plugin: 'com.android.application'
