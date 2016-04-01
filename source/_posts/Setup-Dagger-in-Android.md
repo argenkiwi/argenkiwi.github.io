@@ -1,4 +1,4 @@
-title: Setup Dagger in Android.
+title: Setup Dagger in Android
 date: 2016-04-02 09:54:36
 tags:
 - Dagger
