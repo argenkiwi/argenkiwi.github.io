@@ -4,9 +4,9 @@ tags:
 - Dagger
 - Android
 ---
-Nowadays I use Dagger, the dependency injection library originally created by Square and later adopted by Google, in most of my projects. Every time I have to set it up on a new project I struggle to find a quick guide to remind me of the minimun number of steps I need to follow to get it running. Therefore, I decide to write one.
+Nowadays I use [Dagger](http://google.github.io/dagger/), the dependency injection library, in most of my projects. Every time I have to set it up on a new project I struggle to find a quick guide on how to just do that. Therefore, I decide to write one.
 
-Fist, let's update our project's `build.gradle` file to include `android-apt` as one of its dependencies:
+Fist, let's update our *project's* `build.gradle` file to include [android-apt](https://bitbucket.org/hvisser/android-apt) as one of its dependencies:
 ```Java
 ...
 buildscript {
@@ -22,7 +22,7 @@ buildscript {
 ...
 ```
 
-Next, update you app's `build.gradle` to include the `android-apt` plugin and the dependecies for _Dagger_ and _JavaX annotations_.
+Next, update you *app's* `build.gradle` to include the `android-apt` plugin and the dependecies for _Dagger_ and _JavaX annotations_.
 
 ```Java
 apply plugin: 'com.android.application'
@@ -35,7 +35,17 @@ android {
 dependencies {
     ...
     compile 'com.google.dagger:dagger:2.1'
-    provided 'org.glassfish:javax.annotation:10.0-b28'
     apt 'com.google.dagger:dagger-compiler:2.1'
 }
 ```
+
+*Note:* As I was writing this post I realised I could remove a dependency that was previously needed to make _Dagger_ work on _Android_. If you have trouble compiling you project, try adding the following to your dependencies:
+
+```Java
+dependecies {
+  ...
+  provided 'javax.annotation:javax.annotation-api:1.2'  
+}
+```
+
+The `@Inject` annotation used by _Dagger_ depends on this library.
