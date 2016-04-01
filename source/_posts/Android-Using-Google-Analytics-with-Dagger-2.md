@@ -75,6 +75,10 @@ public class MyApplication extends Application {
 
     private ApplicationComponent mApplicationComponent;
 
+    public static MyApplication get(Context context) {
+        return (MyApplication) context.getApplicationContext();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         DaggerMainActivity_MainComponent.builder()
-                .applicationComponent(((MyApplication) getApplication())
+                .applicationComponent(MyApplication.get(this)
                         .getApplicationComponent())
                 .build()
                 .inject(this);
