@@ -10,7 +10,7 @@ The _Model-View-Presenter_ pattern for software architecture helps separate conc
 Setup
 -----
 
-To learn how to add _Dagger_ to your project's dependencies, click [here](http://soflete.github.io/2015/07/26/Android-Using-Google-Analytics-with-Dagger-2/).
+To learn how to add _Dagger_ to your project's dependencies, click [here](http://soflete.github.io/2016/04/02/Setup-Dagger-in-Android/).
 
 Dagger components and modules
 -----------------------------
