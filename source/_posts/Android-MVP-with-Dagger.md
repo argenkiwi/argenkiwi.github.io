@@ -5,12 +5,12 @@ tags:
 - MVP
 - Dagger
 ---
-The _Model-View-Presenter_ pattern for software architecture helps separate concerns in an application. I would like to share with you how I apply this pattern by implementing dependency injection using [Dagger](http://google.github.io/dagger/).
+The _Model-View-Presenter_ pattern for software architecture helps separate concerns in an application. I would like to share with you how I apply this pattern by using [Dagger](http://google.github.io/dagger/) for dependency injection.
 
 Setup
 -----
 
-To learn how to add _Dagger_ to your project's dependencies, click [here](http://soflete.github.io/2016/04/02/Setup-Dagger-in-Android/).
+To learn how to include _Dagger_ into your project's dependencies, click [here](http://soflete.github.io/2016/04/02/Setup-Dagger-in-Android/).
 
 Dagger components and modules
 -----------------------------
@@ -118,6 +118,6 @@ public class MainPresenter {
 Conclusion
 ----------
 
-Now the `MainFragment` is ready to delegate all its events into the `MainPresenter` and rely on it to retrieve data from the _Model_. The `Presenter` will make any decisions on how and when to update the View.
+Now the `MainFragment` is ready to delegate all its events into the `MainPresenter` and rely on it to retrieve data from the _Model_. The _Presenter_ will make any decisions on how and when to update the View.
 
-In an upcoming example I will show you how I make use of _TDD (Test Driven Development)_ to define the behaviour of the `MainPresenter` while I write a full set of Unit Tests for it.
+In an upcoming example I will show you how I make use of _TDD (Test Driven Development)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
