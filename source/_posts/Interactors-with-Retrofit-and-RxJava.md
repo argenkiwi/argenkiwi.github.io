@@ -67,7 +67,7 @@ public class NewsStory {
 }
 ```
 
-And another one to represent the response from the service which contain the news feed.
+And another one to represent the response from the service which contains the news feed.
 
 ```Java
 public class NewsGeonetResponse {
@@ -85,7 +85,7 @@ We are now ready to define our _Service_.
 ```Java
 public interface GeonetService {
     @GET("news/geonet")
-    void getNews(Callback<NewsGeonetResponse> callback);
+    Observable<NewsGeonetResponse> getNews();
 }
 ```
 
