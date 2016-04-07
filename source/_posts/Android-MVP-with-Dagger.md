@@ -62,14 +62,15 @@ public interface MainComponent {
 Fragments as Views
 ------------------
 
-We want to shield our _Presenter_ from knowing the implementation of the _View_. Therefore, we will create an interface for it.
+We want to shield our _Presenter_ from knowing the concrete implementation of the _View_. Therefore, we will create an interface.
 
 ```Java
 public interface MainView {
 }
 ```
 
-Lets build our project in order to allow _Dagger_ to generate the appropriate code to inject the _Presenter_ into our _View_: the `MainFragment`.
+`MainFragment` will implement `MainView` and initialize its _Components_ and _Modules_.
+Let's build our project at this point in order to allow _Dagger_ to generate the concrete implementation of `MainComponent`.
 
 ```Java
 public class MainFragment extends Fragment implements MainView {
@@ -88,16 +89,10 @@ public class MainFragment extends Fragment implements MainView {
 ```
 
 A few things to note here:
-- Our _Fragment_ implements the `MainView` interface.
-- We have added a field to our _View_ representing our _Presenter_ and added an `@Inject` annotation on top to let _Dagger_ know `MainPresenter` needs to be injected.
-- Finally, we make a call to the generated `DaggerMainComponent` builder and create an instance of `MainModule` passing `MainFragment` as a _View_.
+- We have added a field with the `@Inject` annotation on top to let _Dagger_ know `MainPresenter` needs to be injected.
+- We create an instance of `MainModule` passing the _View_ as a parameter and then build `DaggerMainComponent` to inject `MainFragment` with its dependencies (`MainPresenter` in this case).
 
-```Java
-public interface MainView {
-}
-```
-
-`MainView` will define the interactions of `MainPresenter` with, in this case, `MainFragment`. `MainModule` now looks as follows:
+ `MainModule` now looks as follows:
 
 ```Java
 @Module
@@ -115,7 +110,7 @@ public class MainModule {
 }
 ```
 
-The _Presenter_ should keep a reference to the _View_. `MainPresenter` should currently look like this:
+`MainPresenter` should keep a reference `MainView`. Our _Presenter_ should currently look like this:
 
 ```Java
 public class MainPresenter {
