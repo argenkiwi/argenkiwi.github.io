@@ -15,7 +15,7 @@ To learn how to include _Dagger_ into your project's dependencies, click [here](
 Dagger components and modules
 -----------------------------
 
-Let's say we have just created a new Android project in which we have a `MainActivity` and we created a `MainFragment` to contain our UI.
+Let's say we have just created a new Android project in which we have a `MainActivity` and we created a `MainFragment` (empty for now) to contain our UI.
 
 ```Java
 public class MainActivity extends Activity {
@@ -31,16 +31,14 @@ public class MainActivity extends Activity {
 }
 ```
 
-Next, we will create a _Component_ to hold references to modules and other components we will use in our `MainFragment`.
+Let's begin by creating a and empty _Presenter_ class.
 
 ```Java
-@Component(modules = MainModule.class)
-public interface MainComponent {
-    void inject(MainFragment fragment);
+public class MainPresenter {
 }
 ```
 
-For the moment `MainComponent` holds a reference to `MainModule` (which we will create soon) and injects `MainFragment` with the objects it needs.
+We will need a _Module_ to provide an instance of `MainPresenter`.
 
 ```Java
 @Module
@@ -52,10 +50,24 @@ public class MainModule {
 }
 ```
 
-The `MainModule` provides the View with its _Presenter_.
+Finally, we'll also need to create a _Component_ to inject the `MainPresenter`, provided by `MainModule`, into our `MainFragment`, which, as you will see next, is going to be our _View_.
+
+```Java
+@Component(modules = MainModule.class)
+public interface MainComponent {
+    void inject(MainFragment fragment);
+}
+```
 
 Fragments as Views
 ------------------
+
+We want to shield our _Presenter_ from knowing the implementation of the _View_. Therefore, we will create an interface for it.
+
+```Java
+public interface MainView {
+}
+```
 
 Lets build our project in order to allow _Dagger_ to generate the appropriate code to inject the _Presenter_ into our _View_: the `MainFragment`.
 
