@@ -24,7 +24,7 @@ dependencies {
 }
 ```
 
-We added an _RxJava_ adapter to enable _Retrofit_ to return `Observable` objects from its _Services_. We included the _GSon_ converter only because the endpoint we are going to use in this example returns responses in the _JSON_ format.
+We added an _RxJava_ adapter to enable _Retrofit_ to return `Observable` objects from its _Services_. We included the _Gson_ converter only because the endpoint we are going to use in this example returns responses in the _JSON_ format.
 
 Retrofit Services
 -----------------
