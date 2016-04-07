@@ -43,6 +43,7 @@ We will need a _Module_ to provide an instance of `MainPresenter`.
 ```Java
 @Module
 public class MainModule {
+
     @Provides
     public MainPresenter providePresenter(){
         return new MainPresenter();
@@ -97,6 +98,7 @@ A few things to note here:
 ```Java
 @Module
 public class MainModule {
+
     private final MainView view;
 
     public MainModule(MainView view) {
@@ -114,6 +116,7 @@ public class MainModule {
 
 ```Java
 public class MainPresenter {
+
     private final MainView view;
 
     public MainPresenter(MainView view) {
@@ -127,4 +130,4 @@ Conclusion
 
 Now the `MainFragment` is ready to delegate all its events into the `MainPresenter` and rely on it to retrieve data from the _Model_. The _Presenter_ will make any decisions on how and when to update the View.
 
-In an upcoming example I will show you how I make use of _TDD (Test Driven Development)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
+In my next article I will share with how to create an _Interactor_ to retrieve data from an API and pass it on to the _Presenter_.
