@@ -130,4 +130,4 @@ Conclusion
 
 Now the `MainFragment` is ready to delegate all its events into the `MainPresenter` and rely on it to retrieve data from the _Model_. The _Presenter_ will make any decisions on how and when to update the View.
 
-In my next article I will share with how to create an _Interactor_ to retrieve data from an API and pass it on to the _Presenter_.
+In my [next article](http://soflete.github.io/2016/04/07/Interactors-with-Retrofit-and-RxJava/) I explain how to create an _Interactor_ to retrieve data from an API and pass it on to the _Presenter_.
