@@ -23,7 +23,7 @@ android {
 
 dependencies {
     ...
-    compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
 }
 ```
 
@@ -54,7 +54,19 @@ public class ApplicationModule {
 
 Our Application Module holds a reference to `MyApplication`. You may have noticed I added the `@Named` annotation to the `provideTracker()` method. This is how _Dagger_ distinguishes between different instances of the same class, which could be very useful if you needed to have multiple _Google Analytics_ trackers with different configurations.
 
-Next, let's create our `ApplicationComponent` and make it available to our activities through a getter method:
+Next, let's create our `ApplicationComponent`.
+
+```Java
+@Singleton
+@Component(modules = ApplicationModule.class)
+public interface ApplicationComponent {
+
+    @Named("app")
+    Tracker getTracker();
+}
+```
+
+Next, we need to make it available to our activities through a getter method:
 
 ```Java
 public class MyApplication extends Application {
@@ -68,65 +80,56 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.component = DaggerMyApplication_ApplicationComponent.builder()
+        this.component = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
     }
 
-    public ApplicationComponent getApplicationComponent() {
+    public ApplicationComponent getComponent() {
         return this.component;
-    }
-
-    @Singleton
-    @Component(modules = ApplicationModule.class)
-    public interface ApplicationComponent {
-
-        @Named("app")
-        Tracker getTracker();
     }
 }
 ```
 
-As you can see, `ApplicationComponent` holds a reference to `ApplicationModule`. We instantiate the `ApplicationModule` passing a reference to `MyApplication` as a parameter. The `getTracker()` method makes `Tracker` available to whatever component depends on `ApplicationComponent`. As an example, lets create an activity with a component of its own:
+As you can see, `ApplicationComponent` holds a reference to `ApplicationModule`. We instantiate the `ApplicationModule` passing a reference to `MyApplication` as a parameter. The `getTracker()` method makes `Tracker` available to whatever component depends on `ApplicationComponent`.
+
+Let's create a component for our activity that declares `ApplicationComponent` as a dependency.
 
 ```Java
-public class MainActivity extends AppCompatActivity {
+@ActivityScope
+@Component(dependencies = ApplicationComponent.class)
+public interface MainComponent {
+    void inject(MainActivity mainActivity);
+}
+```
+
+We have to build our project to let _Dagger_ generate code for the concrete implementation of `MainComponent`. Next, we need to create an instance of it in the Activity.
+
+```Java
+public class MainActivity extends Activity {
 
     @Inject
     @Named("app")
-    Tracker mTracker;
-
-    ...
+    Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        DaggerMainActivity_MainComponent.builder()
-                .applicationComponent(MyApplication.get(this)
-                        .getApplicationComponent())
-                .build()
-                .inject(this);
+        DaggerMainComponent.builder()
+                .applicationComponent(MyApplication.get(this).getComponent())
+                .build().inject(this);
 
-        mTracker.setScreenName("main screen");
+        this.tracker.setScreenName("main screen");
 
         setContentView(R.layout.activity_main);
-
-        ...
-    }
-
-    ...
-
-    @ActivityScope
-    @Component(dependencies = MyApplication.ApplicationComponent.class)
-    public interface MainComponent {
-        void inject(MainActivity mainActivity);
     }
 }
 ```
 
 We defined `MainComponent` which depends on `ApplicationComponent` and therefore has access to the `Tracker` named `app`.
-The `inject(MainActivity mainActivity)` method injects `Tracker` (and every other injectable object if there was any) to the _Activity_. Right after invoking it, we are ready to use `Tracker` (in the example above, we set the screen name).
+
+The `inject(MainActivity mainActivity)` method injects `Tracker` (and every other injectable object if there was any) to `MainActivity`. Right after invoking it, we are ready to use `Tracker` (in the example above, we set the screen name).
 
 You probably noticed the `@ActivityScope` annotation on top of `MainComponent`. In _Dagger_ you can define what is called a custom scope. Scopes tell _Dagger_ what the lifetime of a certain component should be. In the case of `ApplicationComponent` the scope is `@Singleton`. Here is how we define our custom scope:
 

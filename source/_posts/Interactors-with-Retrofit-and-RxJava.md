@@ -156,7 +156,35 @@ public class GetNewsInteractor {
 }
 ```
 
-`GetNewsInteractor` executes a request on a separate thread and returns its response into the main thread (or UI thread). It also holds a subscription to the request that can be canceled at any time. We need this _Interactor_ to be available to our _Presenter_, so let's add it to its _Module_.
+`GetNewsInteractor` executes a request on a separate thread and returns its response into the main thread (or UI thread). It also holds a subscription to the request that can be canceled at any time.
+
+Let's add the `GetNewsInteractor` to our _Presenter_ and make it implement _RxJava_'s `Subscriber` interface so it can act as a callback for the requests made by `GetNewsInteractor`.
+
+```Java
+public class MainPresenter extends Subscriber<NewsGeonetResponse> {
+
+    private final MainView view;
+    private final GetNewsInteractor interactor;
+
+    public MainPresenter(MainView view, GetNewsInteractor interactor) {
+        this.view = view;
+        this.interactor = interactor;
+    }
+
+    @Override
+    public void onCompleted() {
+    }
+
+    @Override
+    public void onError(Throwable e) {
+    }
+
+    @Override
+    public void onNext(NewsGeonetResponse newsGeonetResponse) {
+    }
+}
+```
+`GetNewsInteractor` needs to be provided to `MainPresenter` by its _Module_.
 
 ```Java
 @Module
@@ -190,31 +218,4 @@ public interface MainComponent {
 }
 ```
 
-Finally, our _Presenter_ needs to implement _RxJava_'s `Subscriber` interface so it can act as a callback for the requests made by `GetNewsInteractor`.
-
-```Java
-public class MainPresenter extends Subscriber<NewsGeonetResponse> {
-
-    private final MainView view;
-    private final GetNewsInteractor interactor;
-
-    public MainPresenter(MainView view, GetNewsInteractor interactor) {
-        this.view = view;
-        this.interactor = interactor;
-    }
-
-    @Override
-    public void onCompleted() {
-    }
-
-    @Override
-    public void onError(Throwable e) {
-    }
-
-    @Override
-    public void onNext(NewsGeonetResponse newsGeonetResponse) {
-    }
-}
-```
-
-In an upcoming example I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
+`MainPresenter` can now communicate with `MainView` and `GetNewsInteractor`. In an upcoming example I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
