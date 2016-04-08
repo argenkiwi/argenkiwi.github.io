@@ -116,13 +116,55 @@ public class ApplicationModule {
 }
 ```
 
-Finally, we need to expose the service through the application's _Component_.
+Next, we need to expose the service through the application's _Component_.
 
 ```Java
 @Singleton
 @Component(modules = ApplicationModule.class)
 public interface ApplicationComponent {
     GeonetService getGeonetService();
+}
+```
+
+In order to make the `ApplicationComponent` available throughout our application, we need to build our project, to let _Dagger_ generate its concrete implementation, and create a custom _Application_ class.
+
+```Java
+public class MyApplication extends Application {
+
+    private ApplicationComponent component;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        component = DaggerApplicationComponent.builder().build();
+    }
+
+    public static MyApplication get(Context context) {
+        return (MyApplication) context.getApplicationContext();
+    }
+
+    public ApplicationComponent getComponent() {
+        return component;
+    }
+}
+```
+
+Finally, we need to update `MainFragment` to build `MainModule` using the `ApplicationComponent` instance provided, in this case, by `MyApplication`.
+
+```Java
+public class MainFragment extends Fragment implements MainView {
+
+    @Inject
+    MainPresenter presenter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        DaggerMainComponent.builder()
+                .applicationComponent(MyApplication.get(getActivity()).getComponent())
+                .mainModule(new MainModule(this))
+                .build().inject(this);
+    }
 }
 ```
 
