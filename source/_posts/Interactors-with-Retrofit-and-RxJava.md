@@ -262,4 +262,4 @@ public class MainFragment extends Fragment implements MainView {
 
 **Note:** As we need a context to retrieve the instance of `MyApplication`, I moved the initialisation of `MainComponent` from `onCreate(Bundle savedInstanceState)` to `onAttach(Context context)`.
 
-At this stage, `MainPresenter` can communicate with `MainView` and `GetNewsInteractor`. In an upcoming example I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
+At this stage, `MainPresenter` can communicate with `MainView` and `GetNewsInteractor`. In an [upcoming example](2016/04/05/Android-Unit-Testing-Presenters/) I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
