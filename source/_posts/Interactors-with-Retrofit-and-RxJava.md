@@ -252,6 +252,17 @@ public class MainModule {
 
 `MainPresenter` is injected with `GetNewsInteractor`. But to be able to inject `GeonetService` to `GetNewsInteractor` we need our _Component_ to declare a dependency on `ApplicationComponent`.
 
+In order to declare a dependency on a scoped _Component_ (`ApplicationComponent` is scoped as `@Singleton`), `MainComponent` needs to have a _Scope_.
+
+```Java
+@Scope
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ViewScope {
+}
+```
+
+`ViewScope` can be used for all our feature specific _Components_. Now we are ready to update `MainComponent`'s dependencies.
+
 ```Java
 @ViewScope
 @Component(dependencies = ApplicationComponent.class, modules = MainModule.class)
@@ -260,4 +271,4 @@ public interface MainComponent {
 }
 ```
 
-`MainPresenter` can now communicate with `MainView` and `GetNewsInteractor`. In an upcoming example I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
+At this stage, `MainPresenter` can communicate with `MainView` and `GetNewsInteractor`. In an upcoming example I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
