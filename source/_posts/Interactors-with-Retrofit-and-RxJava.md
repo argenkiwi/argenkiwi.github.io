@@ -5,7 +5,7 @@ tags:
 - Retrofit
 - RxJava
 ---
-In a [previous article](http://soflete.github.io/2016/04/01/Android-MVP-with-Dagger/) I described how to structure your application under the _Model-View-Presenter_ architecture applying dependency injection with [Dagger](http://google.github.io/dagger/). I covered how to setup a _View_ and its _Presenter_. Today I would like to share with you how to use an _Interactors_ to communicate the _Presenter_ with the _Model_.
+In a [previous article](http://soflete.github.io/2016/04/01/Android-MVP-with-Dagger/) I described how to structure your application under the _Model-View-Presenter_ architecture applying dependency injection with [Dagger](http://google.github.io/dagger/). I covered how to setup a _View_ and its _Presenter_. Today I would like to share with you how to use an _Interactor_ to communicate the _Presenter_ with the _Model_.
 
 Setup
 -----
@@ -26,8 +26,8 @@ dependencies {
 
 We added an _RxJava_ adapter to enable _Retrofit_ to return `Observable` objects from its _Services_. We included the _Gson_ converter only because the endpoint we are going to use in this example returns responses in the _JSON_ format.
 
-Retrofit Services
------------------
+The Retrofit Service
+--------------------
 
 Let's say we want to list the latest news from [Geonet](http://www.geonet.org.nz/), a geological hazard monitoring system from New Zealand. The response we get from http://api.geonet.org.nz/news/geonet looks similar to this:
 
@@ -149,27 +149,8 @@ public class MyApplication extends Application {
 }
 ```
 
-Finally, we need to update `MainFragment` to build `MainModule` using the `ApplicationComponent` instance provided, in this case, by `MyApplication`.
-
-```Java
-public class MainFragment extends Fragment implements MainView {
-
-    @Inject
-    MainPresenter presenter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        DaggerMainComponent.builder()
-                .applicationComponent(MyApplication.get(getActivity()).getComponent())
-                .mainModule(new MainModule(this))
-                .build().inject(this);
-    }
-}
-```
-
-Interactors
------------
+The Interactor
+--------------
 
 To shield our _Presenter_ from the specifics of _Retrofit_ we are going to create an _Interactor_.
 
@@ -268,6 +249,25 @@ public @interface ViewScope {
 @Component(dependencies = ApplicationComponent.class, modules = MainModule.class)
 public interface MainComponent {
     void inject(MainFragment fragment);
+}
+```
+
+Finally, we need to update `MainFragment` to build `MainModule` using the `ApplicationComponent` instance provided, in this case, by `MyApplication`.
+
+```Java
+public class MainFragment extends Fragment implements MainView {
+
+    @Inject
+    MainPresenter presenter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        DaggerMainComponent.builder()
+                .applicationComponent(MyApplication.get(getActivity()).getComponent())
+                .mainModule(new MainModule(this))
+                .build().inject(this);
+    }
 }
 ```
 
