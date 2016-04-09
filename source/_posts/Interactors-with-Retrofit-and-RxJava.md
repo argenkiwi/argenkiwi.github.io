@@ -149,6 +149,8 @@ public class MyApplication extends Application {
 }
 ```
 
+Don't forget to add `MyApplication` as the `name` attribute of the `application` element in `AndroidManifest.xml`.
+
 The Interactor
 --------------
 
