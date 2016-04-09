@@ -1,5 +1,5 @@
 title: 'Android: Unit Testing Presenters'
-date: 2016-04-05 18:52:37
+date: 2016-04-10 11:15:37
 tags:
 - Android
 - Unit Testing
@@ -72,10 +72,10 @@ public class MainPresenterTest {
 
 This simple test forces us to do two things:
 - Add an `onViewCreated` method to our `MainPresenter`.
-- Make `MainPresenter` to extend RxJava's `Subscriber` for the _Presenter_ to be notified about event related to getting the news.
+- Make `MainPresenter` implement RxJava's `Observer` interface in order to receive events from `GetNewsInteractor`.
 
 ```Java
-public class MainPresenter extends Subscriber<NewsGeonetResponse> {
+public class MainPresenter extends Observer<NewsGeonetResponse> {
 
     private final MainView view;
     private final GetNewsInteractor interactor;
@@ -106,10 +106,10 @@ public class MainPresenter extends Subscriber<NewsGeonetResponse> {
 }
 ```
 
-If we run the test again this time. It will tell us `interactor.execute(presenter)` hasn't been executed. That is great, we've just applied the first step of _TDD_ by making our test fail. Let's move on to the next step and get our test to pass by implementing the `onViewCreated` method of `MainPresenter`.
+If we run the test again this time, it will tell us `interactor.execute(presenter)` hasn't been executed. This is great, we've just applied the first step of _TDD_: we made our test fail. Let's move on to getting our test to pass by implementing the `onViewCreated` method of `MainPresenter`.
 
 ```Java
-public class MainPresenter extends Subscriber<NewsGeonetResponse> {
+public class MainPresenter extends Observer<NewsGeonetResponse> {
     ...
     public void onViewCreated() {
         interactor.execute(this);
@@ -148,7 +148,7 @@ public interface MainView {
 Make sure `MainFragment` implements the new method of the `MainView` interface and run the test again. It should still fail. It is time to update `MainPresenter` to make the test pass.
 
 ```Java
-public class MainPresenter extends Subscriber<NewsGeonetResponse> {
+public class MainPresenter extends Observer<NewsGeonetResponse> {
     ...
     @Override
     public void onNext(NewsGeonetResponse newsGeonetResponse) {
@@ -206,7 +206,7 @@ public interface MainView {
 If you managed to make your tests pass, `MainPresenter` should be similar to this:
 
 ```Java
-public class MainPresenter extends Subscriber<NewsGeonetResponse> {
+public class MainPresenter extends Observer<NewsGeonetResponse> {
 
     private final MainView view;
     private final GetNewsInteractor interactor;

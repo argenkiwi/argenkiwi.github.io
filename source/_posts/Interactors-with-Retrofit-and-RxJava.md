@@ -166,11 +166,11 @@ public class GetNewsInteractor {
         this.service = service;
     }
 
-    public void execute(Subscriber<NewsGeonetResponse> subscriber) {
+    public void execute(Observer<NewsGeonetResponse> observer) {
         subscription = service.getNews()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber);
+                .subscribe(observer);
     }
 
     public void cancel() {
