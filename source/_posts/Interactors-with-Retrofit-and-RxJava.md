@@ -263,10 +263,10 @@ public class MainFragment extends Fragment implements MainView {
     MainPresenter presenter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         DaggerMainComponent.builder()
-                .applicationComponent(MyApplication.get(getActivity()).getComponent())
+                .applicationComponent(MyApplication.get(context).getComponent())
                 .mainModule(new MainModule(this))
                 .build().inject(this);
     }
