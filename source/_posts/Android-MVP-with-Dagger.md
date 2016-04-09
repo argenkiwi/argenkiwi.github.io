@@ -70,30 +70,20 @@ public interface MainView {
 }
 ```
 
-`MainFragment` will implement `MainView` and initialize its _Components_ and _Modules_.
-Let's build our project at this point in order to allow _Dagger_ to generate the concrete implementation of `MainComponent`.
+Let's update `MainPresenter` to keep a reference to `MainView`.
 
 ```Java
-public class MainFragment extends Fragment implements MainView {
+public class MainPresenter {
 
-    @Inject
-    MainPresenter presenter;
+    private final MainView view;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        DaggerMainComponent.builder()
-                .mainModule(new MainModule(this))
-                .build().inject(this);
+    public MainPresenter(MainView view) {
+        this.view = view;
     }
 }
 ```
 
-A few things to note here:
-- We have added a field with the `@Inject` annotation on top to let _Dagger_ know `MainPresenter` needs to be injected.
-- We create an instance of `MainModule` passing the _View_ as a parameter and then build `DaggerMainComponent` to inject `MainFragment` with its dependencies (`MainPresenter` in this case).
-
- `MainModule` now looks as follows:
+We now need to update `MainModule` to inject `MainView` into `MainPresenter`.
 
 ```Java
 @Module
@@ -112,18 +102,28 @@ public class MainModule {
 }
 ```
 
-`MainPresenter` should keep a reference `MainView`. Our _Presenter_ should currently look like this:
+Finally, we will make `MainFragment` implement `MainView`. Let's build our project at this point in order to allow _Dagger_ to generate the concrete implementation of `MainComponent`.
 
 ```Java
-public class MainPresenter {
+public class MainFragment extends Fragment implements MainView {
 
-    private final MainView view;
+    @Inject
+    MainPresenter presenter;
 
-    public MainPresenter(MainView view) {
-        this.view = view;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        DaggerMainComponent.builder()
+                .mainModule(new MainModule(this))
+                .build().inject(this);
     }
 }
 ```
+
+A few things to note here:
+- We have added a `presenter` field with the `@Inject` annotation on top to let _Dagger_ know `MainPresenter` needs to be injected.
+- We create an instance of `MainModule` and pass the _View_ as a parameter in its constructor.
+- We build `DaggerMainComponent` and inject `MainFragment` with its dependencies (`MainPresenter` in this case).
 
 Conclusion
 ----------

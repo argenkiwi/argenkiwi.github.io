@@ -183,29 +183,16 @@ public class GetNewsInteractor {
 
 `GetNewsInteractor` executes a request on a separate thread and returns its response into the main thread (or UI thread). It also holds a subscription to the request that can be canceled at any time.
 
-Let's add the `GetNewsInteractor` to our _Presenter_ and make it implement _RxJava_'s `Subscriber` interface so it can act as a callback for the requests made by `GetNewsInteractor`.
+Let's add a reference to `GetNewsInteractor` into our _Presenter_.
 
 ```Java
-public class MainPresenter extends Subscriber<NewsGeonetResponse> {
-
+public class MainPresenter {
     private final MainView view;
     private final GetNewsInteractor interactor;
 
     public MainPresenter(MainView view, GetNewsInteractor interactor) {
         this.view = view;
         this.interactor = interactor;
-    }
-
-    @Override
-    public void onCompleted() {
-    }
-
-    @Override
-    public void onError(Throwable e) {
-    }
-
-    @Override
-    public void onNext(NewsGeonetResponse newsGeonetResponse) {
     }
 }
 ```
@@ -248,7 +235,7 @@ public @interface ViewScope {
 
 ```Java
 @ViewScope
-@Component(dependencies = ApplicationComponent.class, modules = MainModule.class)
+@Component(modules = MainModule.class, dependencies = ApplicationComponent.class)
 public interface MainComponent {
     void inject(MainFragment fragment);
 }
@@ -272,5 +259,7 @@ public class MainFragment extends Fragment implements MainView {
     }
 }
 ```
+
+**Note:** As we need a context to retrieve the instance of `MyApplication`, I moved the initialisation of `MainComponent` from `onCreate(Bundle savedInstanceState)` to `onAttach(Context context)`.
 
 At this stage, `MainPresenter` can communicate with `MainView` and `GetNewsInteractor`. In an upcoming example I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
