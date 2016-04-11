@@ -21,7 +21,7 @@ In order to execute Unit Tests in _Android Studio_ you need to make sure you hav
 dependencies {
     ...
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-all:1.8.4'
+    testCompile 'org.mockito:mockito-core:1.10.19'
 }
 ```
 
