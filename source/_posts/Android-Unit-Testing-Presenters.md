@@ -196,7 +196,7 @@ public class MainPresenterTest {
 }
 ```
 
-I want a loading dialog to show when the view is created. Also, I want to hide it when we finish loading the news. Finally, if there is an error, I want to display an error message. If you apply the steps we described befor, `MainView` should now look as follows.
+I want a loading dialog to show when the view is created. Also, I want to hide it when we finish loading the news. Finally, if there is an error, I want to display an error message. If you apply the steps we described before, `MainView` should now look as follows.
 
 ```Java
 public interface MainView {
@@ -279,6 +279,6 @@ public class MainFragment extends Fragment implements MainView {
 Conclusion
 ----------
 
-By writing _Unit Tests_ for our _Presenter_ first, we can test and implement the behaviour of our application without writing a single line of UI code. This allows us to focus on one aspect of our application at a time. Also, our feedback loop shortens as we don't need to deploy our application to a device or an emulator to verify we are doing the right thing. Implementing the methods in our _View_ should be trivial, given each of them fulfills a very specific purpose as a byproduct of applying both _TDD_ and _MVP_.
+By writing _Unit Tests_ for our _Presenter_ first, we can test and implement the behaviour of our application without writing a single line of UI code. This allows us to focus on one aspect of our application at a time. Also, our feedback loop shortens as we don't need to deploy our application to a device or an emulator to verify it is doing the right thing. Implementing the methods in our _View_ should be trivial, given each of them fulfills a very specific purpose as a byproduct of applying both _TDD_ and _MVP_.
 
 This concludes my series of articles on the _Mode-View-Presenter_ architecture and _Test Driven Development_ applied to _Android_. I hope some of these ideas help you make your development process more enjoyable.
