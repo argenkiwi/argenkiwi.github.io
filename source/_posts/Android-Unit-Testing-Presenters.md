@@ -61,6 +61,7 @@ We are now ready to write our first test. We would like to ensure `MainPresenter
 ...
 import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MainPresenterTest {
     ...    
     @Test
