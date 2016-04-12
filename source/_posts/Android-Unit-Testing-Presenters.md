@@ -58,6 +58,9 @@ The `setUp()` method creates an instance of `MainPresenter` before running each 
 We are now ready to write our first test. We would like to ensure `MainPresenter` attempts to load some news when the view is created.
 
 ```Java
+...
+import static org.mockito.Mockito.verify;
+
 public class MainPresenterTest {
     ...    
     @Test
@@ -120,6 +123,9 @@ public class MainPresenter implements Observer<NewsGeonetResponse> {
 If everything went as expected, our test should now pass. Easy, right? Now we want to make sure we show the news when they finish loading.
 
 ```Java
+...
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class MainPresenterTest {
     ...
