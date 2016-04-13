@@ -66,7 +66,7 @@ public class MainPresenterTest {
     ...    
     @Test
     public void shouldGetNews(){
-        presenter.onViewCreated();
+        presenter.onStart();
         verify(interactor).execute(presenter);
     }
 }
