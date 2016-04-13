@@ -196,7 +196,7 @@ public class MainPresenterTest {
 
     @Test
     public void shouldShowLoading(){
-        presenter.onViewCreated();
+        presenter.onStart();
         verify(view).showLoading();
     }
 }
