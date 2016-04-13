@@ -177,6 +177,12 @@ public class MainPresenterTest {
 
     ...
     @Test
+    public void shouldCancel() {
+        presenter.onStop();
+        verify(interactor).cancel();
+    }
+
+    @Test
     public void shouldHideLoading(){
         presenter.onCompleted();
         verify(view).hideLoading();
@@ -238,9 +244,13 @@ public class MainPresenter implements Observer<NewsGeonetResponse> {
         view.showNews(newsGeonetResponse.getNewsStories());
     }
 
-    public void onViewCreated() {
+    public void onStart() {
         view.showLoading();
         interactor.execute(this);
+    }
+
+    public void onStop() {
+        interactor.cancel();
     }
 }
 ```
