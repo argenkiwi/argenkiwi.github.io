@@ -6,7 +6,7 @@ tags:
 - TDD
 - MVP
 ---
-This is the third post of a series. In the [first post](http://soflete.github.io/2016/04/01/Android-MVP-with-Dagger/) I demonstrate how to setup the _View_ and the _Presenter_ of a _Model-View-Presenter_ architecture using _dependency injection_. In the [second post](http://soflete.github.io/2016/04/07/Interactors-with-Retrofit-and-RxJava/) I describe how to put together an _Interactor_ and inject it into the _Presenter_.
+This is the third post of a series. In the [first post](http://soflete.github.io/2017/07/01/Android-MVP-with-Dagger/) I demonstrate how to setup the _View_ and the _Presenter_ of a _Model-View-Presenter_ architecture using _dependency injection_. In the [second post](http://soflete.github.io/2017/07/01/Interactors-with-Retrofit-and-RxJava/) I describe how to put together an _Interactor_ and inject it into the _Presenter_.
 
 In this post I would like to show you how I apply _TDD (Test Driven Development)_ to define and implement the interactions of the _Presenter_ with the _View_ and the _Interactor_.
 

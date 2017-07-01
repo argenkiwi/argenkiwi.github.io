@@ -5,7 +5,7 @@ tags:
 - Retrofit
 - RxJava
 ---
-In a [previous article](http://soflete.github.io/2016/04/01/Android-MVP-with-Dagger/) I described how to structure your application under the _Model-View-Presenter_ architecture applying dependency injection with [Dagger](http://google.github.io/dagger/). I covered how to setup a _View_ and its _Presenter_. Today I would like to share with you how to use an _Interactor_ to communicate the _Presenter_ with the _Model_.
+In a [previous article](http://soflete.github.io/2017/07/01/Android-MVP-with-Dagger/) I described how to structure your application under the _Model-View-Presenter_ architecture applying dependency injection with [Dagger](http://google.github.io/dagger/). I covered how to setup a _View_ and its _Presenter_. Today I would like to share with you how to use an _Interactor_ to communicate the _Presenter_ with the _Model_.
 
 Setup
 -----
@@ -289,4 +289,4 @@ public class MainFragment extends Fragment implements MainView {
 }
 ```
 
-At this stage, `MainPresenter` can communicate with `MainView` and `GetNewsInteractor`. In an [upcoming example](http://soflete.github.io/2016/04/10/Android-Unit-Testing-Presenters/) I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
+At this stage, `MainPresenter` can communicate with `MainView` and `GetNewsInteractor`. In an [upcoming example](http://soflete.github.io/2017/07/01/Android-Unit-Testing-Presenters/) I will explain how I apply _Test Driven Development (TDD)_ to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
