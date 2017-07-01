@@ -1,5 +1,5 @@
 title: 'Android: Unit Testing Presenters'
-date: 2016-04-10 11:15:37
+date: 2017-07-01 16:53:37
 tags:
 - Android
 - Unit Testing
@@ -16,12 +16,10 @@ Setup
 In order to execute Unit Tests in _Android Studio_ you need to make sure you have a `src/test` folder. Also, you need to include dependencies on _JUnit_ and _Mockito_ in your application's `build.gradle` file.
 
 ```Java
-...
-
 dependencies {
     ...
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'junit:junit:4.12'                      
+    testCompile 'org.mockito:mockito-core:2.8.47' 
 }
 ```
 
@@ -66,42 +64,27 @@ public class MainPresenterTest {
     ...    
     @Test
     public void shouldGetNews(){
-        presenter.onStart();
-        verify(interactor).execute(presenter);
+        presenter.onViewCreated();
+        verify(interactor).execute(
+                ArgumentMatchers.<Consumer<NewsGeonetResponse>>any(),
+                ArgumentMatchers.<Consumer<Throwable>>any()
+        );
     }
 }
 ```
 
 `Mockito.verify()` makes sure the methods of a _Mock_ are being executed and that the expected parameters are passed to them. If you try to run this test, you will get a compile time error.
 
-This simple test forces us to do two things:
-- Add an `onViewCreated` method to our `MainPresenter`.
-- Make `MainPresenter` implement RxJava's `Observer` interface in order to receive events from `GetNewsInteractor`.
+By writing this test we realise we need to add an `onViewCreated` method to our `MainPresenter`.
 
 ```Java
-public class MainPresenter implements Observer<NewsGeonetResponse> {
-
+public class MainPresenter {
     private final MainView view;
     private final GetNewsInteractor interactor;
 
     public MainPresenter(MainView view, GetNewsInteractor interactor) {
         this.view = view;
         this.interactor = interactor;
-    }
-
-    @Override
-    public void onCompleted() {
-
-    }
-
-    @Override
-    public void onError(Throwable e) {
-
-    }
-
-    @Override
-    public void onNext(NewsGeonetResponse newsGeonetResponse) {
-
     }
 
     public void onViewCreated() {
@@ -113,10 +96,20 @@ public class MainPresenter implements Observer<NewsGeonetResponse> {
 If we run the test again this time, it will tell us `interactor.execute(presenter)` hasn't been executed. This is great, we've just applied the first step of _TDD_: we made our test fail. Let's move on to getting our test to pass by implementing the `onViewCreated` method of `MainPresenter`.
 
 ```Java
-public class MainPresenter implements Observer<NewsGeonetResponse> {
+public class MainPresenter {
     ...
     public void onViewCreated() {
-        interactor.execute(this);
+        interactor.execute(new Consumer<NewsGeonetResponse>() {
+            @Override
+            public void accept(@NonNull NewsGeonetResponse newsGeonetResponse) throws Exception {
+                // TODO Show news.
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                // TODO Handle error.
+            }
+        });
     }
 }
 ```
@@ -124,27 +117,31 @@ public class MainPresenter implements Observer<NewsGeonetResponse> {
 If everything went as expected, our test should now pass. Easy, right? Now we want to make sure we show the news when they finish loading.
 
 ```Java
-...
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class MainPresenterTest {
     ...
-    @Mock
-    private NewsGeonetResponse response;
+    @Captor
+    private ArgumentCaptor<Consumer<NewsGeonetResponse>> newsConsumerCaptor;
 
     ...
     @Test
-    public void shouldShowNews(){
-        NewsStory[] newsStories = new NewsStory[]{};
-        when(response.getNewsStories()).thenReturn(newsStories);
-        presenter.onNext(response);
-        verify(view).showNews(newsStories);
+    public void shouldShowNews() throws Exception {
+        NewsStory[] stories = new NewsStory[]{};
+        NewsGeonetResponse response = new NewsGeonetResponse(stories);
+
+        presenter.onViewCreated();
+        verify(interactor).execute(
+                newsConsumerCaptor.capture(),
+                ArgumentMatchers.<Consumer<Throwable>>any()
+        );
+
+        newsConsumerCaptor.getValue().accept(response);
+        verify(view).showNews(stories);
     }
 }
 ```
 
-In this case, I chose to mock the response. This way I can specify what the `getNewsStories()` method returns by using `Mockito.when()`. Again, if we run our test now it will fail because we still haven't implemented the `showNews` method. `MainView` should look as follows:
+Again, if we run our test now it will fail because we still haven't implemented the `showNews` method. `MainView` should look as follows:
 
 ```Java
 public interface MainView {
@@ -157,9 +154,18 @@ Make sure `MainFragment` implements the new method of the `MainView` interface a
 ```Java
 public class MainPresenter implements Observer<NewsGeonetResponse> {
     ...
-    @Override
-    public void onNext(NewsGeonetResponse newsGeonetResponse) {
-        view.showNews(newsGeonetResponse.getNewsStories());
+    public void onViewCreated() {
+        interactor.execute(new Consumer<NewsGeonetResponse>() {
+            @Override
+            public void accept(@NonNull NewsGeonetResponse newsGeonetResponse) throws Exception {
+                view.showNews(newsGeonetResponse.getNewsStories());
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                // TODO Handle error.
+            }
+        });
     }
 }
 ```
@@ -172,55 +178,44 @@ If you got this far, I can safely assume you are a smart reader and you already 
 @RunWith(MockitoJUnitRunner.class)
 public class MainPresenterTest {
     ...
-    @Mock
-    private Throwable error;
+    @Captor
+    private ArgumentCaptor<Consumer<Throwable>> throwableConsumerCaptor;
 
     ...
     @Test
-    public void shouldCancel() {
-        presenter.onStop();
-        verify(interactor).cancel();
-    }
+    public void shouldShowError() throws Exception {
+        presenter.onViewCreated();
+        verify(interactor).execute(
+                ArgumentMatchers.<Consumer<NewsGeonetResponse>>any(),
+                throwableConsumerCaptor.capture()
+        );
 
-    @Test
-    public void shouldHideLoading(){
-        presenter.onCompleted();
-        verify(view).hideLoading();
-    }
-
-    @Test
-    public void shouldShowError(){
-        presenter.onError(error);
+        throwableConsumerCaptor.getValue().accept(new Throwable());
         verify(view).showError();
     }
 
     @Test
-    public void shouldShowLoading(){
-        presenter.onStart();
-        verify(view).showLoading();
+    public void shouldCancel(){
+        presenter.onDestroyView();
+        verify(interactor).cancel();
     }
 }
 ```
 
-I want a loading dialog to show when the view is created. Also, I want to hide it when we finish loading the news. Finally, if there is an error, I want to display an error message. If you apply the steps we described before, `MainView` should now look as follows.
+Iff there is an error, I want to display an error message. Also, when the view is about to be destroyed, I want to cancel the request in case it is still pending. If you apply the steps we described before, `MainView` should now look as follows.
 
 ```Java
 public interface MainView {
     void hideLoading();
 
     void showError();
-
-    void showLoading();
-
-    void showNews(NewsStory[] newsStories);
 }
 ```
 
-If you managed to make your tests pass, `MainPresenter` should be similar to this:
+If you managed to make your tests pass, `MainPresenter` should be resemble the following:
 
 ```Java
-public class MainPresenter implements Observer<NewsGeonetResponse> {
-
+public class MainPresenter {
     private final MainView view;
     private final GetNewsInteractor interactor;
 
@@ -229,33 +224,27 @@ public class MainPresenter implements Observer<NewsGeonetResponse> {
         this.interactor = interactor;
     }
 
-    @Override
-    public void onCompleted() {
-        view.hideLoading();
+    public void onViewCreated() {
+        interactor.execute(new Consumer<NewsGeonetResponse>() {
+            @Override
+            public void accept(@NonNull NewsGeonetResponse newsGeonetResponse) throws Exception {
+                view.showNews(newsGeonetResponse.getNewsStories());
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(@NonNull Throwable throwable) throws Exception {
+                view.showError();
+            }
+        });
     }
 
-    @Override
-    public void onError(Throwable e) {
-        view.showError();
-    }
-
-    @Override
-    public void onNext(NewsGeonetResponse newsGeonetResponse) {
-        view.showNews(newsGeonetResponse.getNewsStories());
-    }
-
-    public void onStart() {
-        view.showLoading();
-        interactor.execute(this);
-    }
-
-    public void onStop() {
+    public void onDestroyView() {
         interactor.cancel();
     }
 }
 ```
 
-Finally, `MainFragment` should also have some new empty methods.
+Finally, `MainFragment` should also have a new empty method.
 
 ```Java
 public class MainFragment extends Fragment implements MainView {
@@ -263,24 +252,19 @@ public class MainFragment extends Fragment implements MainView {
     @Inject
     MainPresenter presenter;
 
-    ...
     @Override
-    public void hideLoading() {
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+    }
+
+    @Override
+    public void showNews(NewsStory[] stories) {
 
     }
 
     @Override
     public void showError() {
-
-    }
-
-    @Override
-    public void showLoading() {
-
-    }
-
-    @Override
-    public void showNews(NewsStory[] newsStories) {
 
     }
 }
