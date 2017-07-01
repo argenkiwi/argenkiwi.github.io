@@ -1,76 +1,34 @@
 title: 'Android: MVP with Dagger'
-date: 2016-04-01 08:00:01
+date: 2017-07-01 14:44:01
 tags:
 - Android
 - MVP
 - Dagger
 ---
-The _Model-View-Presenter_ pattern for software architecture helps separate concerns in an application. I would like to share with you how I apply this pattern by using [Dagger](http://google.github.io/dagger/) for dependency injection.
+The _Model-View-Presenter_ pattern for software architecture helps to separate concerns in an application. In this article I intend to show you how I apply this pattern by using [Dagger](http://google.github.io/dagger/) for dependency injection.
 
-Setup
------
+First, we need to add the Dagger dependencies to our project:
+```Gradle
+dependencies {
+    ...
 
-To learn how to include _Dagger_ into your project's dependencies, click [here](http://soflete.github.io/2016/04/02/Setup-Dagger-in-Android/).
+    // Dagger
+    compile 'com.google.dagger:dagger:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
 
-Dagger components and modules
------------------------------
-
-Let's say we have just created a new Android project in which we have a `MainActivity` and we created a `MainFragment` (empty for now) to contain our UI.
-
-```Java
-public class MainActivity extends Activity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if(savedInstanceState == null){
-            getFragmentManager().beginTransaction()
-                    .add(android.R.id.content, new MainFragment())
-                    .commit();
-        }
-    }
+    // Dagger Android
+    compile 'com.google.dagger:dagger-android:2.11'
+    compile 'com.google.dagger:dagger-android-support:2.11'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
 }
 ```
-
-Let's begin by creating a and empty _Presenter_ class.
-
-```Java
-public class MainPresenter {
-}
-```
-
-We will need a _Module_ to provide an instance of `MainPresenter`.
-
-```Java
-@Module
-public class MainModule {
-
-    @Provides
-    public MainPresenter providePresenter(){
-        return new MainPresenter();
-    }
-}
-```
-
-Finally, we'll also need to create a _Component_ to inject the `MainPresenter`, provided by `MainModule`, into our `MainFragment`, which, as you will see next, is going to be our _View_.
-
-```Java
-@Component(modules = MainModule.class)
-public interface MainComponent {
-    void inject(MainFragment fragment);
-}
-```
-
-Fragments as Views
-------------------
-
-We want to shield our _Presenter_ from knowing the concrete implementation of the _View_. Therefore, we will create an interface.
-
+Let's now create a an empty interface to define our View:
 ```Java
 public interface MainView {
+
 }
 ```
-
-Let's update `MainPresenter` to keep a reference to `MainView`.
+Next, let's create a concrete implementation of our Presenter which will hold a reference to the View:
 
 ```Java
 public class MainPresenter {
@@ -82,28 +40,34 @@ public class MainPresenter {
     }
 }
 ```
-
-We now need to update `MainModule` to inject `MainView` into `MainPresenter`.
-
+In order to allow Dagger to create an instance of the Presenter which uses the Fragment as its View, we need to create an abstract module:
 ```Java
 @Module
-public class MainModule {
+public abstract class MainModule {
 
-    private final MainView view;
-
-    public MainModule(MainView view) {
-        this.view = view;
-    }
+    @Binds
+    public abstract MainView mainView(MainFragment fragment);
 
     @Provides
-    public MainPresenter providePresenter() {
+    public static MainPresenter mainPresenter(MainView view){
         return new MainPresenter(view);
     }
 }
 ```
-
-Finally, we will make `MainFragment` implement `MainView`. Let's build our project at this point in order to allow _Dagger_ to generate the concrete implementation of `MainComponent`.
-
+Let's create a Component that references our Module and is able to inject our Fragment:
+```Java
+@Component(modules = {
+        AndroidSupportInjectionModule.class,
+        MainModule.class
+})
+public interface MainComponent extends AndroidInjector<MainFragment> {
+    
+    @Component.Builder
+    abstract class Builder extends AndroidInjector.Builder<MainFragment> {
+    }
+}
+```
+Finally, we need to build our component and inject our Fragment:
 ```Java
 public class MainFragment extends Fragment implements MainView {
 
@@ -111,23 +75,17 @@ public class MainFragment extends Fragment implements MainView {
     MainPresenter presenter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        DaggerMainComponent.builder()
-                .mainModule(new MainModule(this))
-                .build().inject(this);
+    public void onAttach(Context context) {
+        // Before adding the following line, build your project.
+        DaggerMainComponent.builder().create(this).inject(this);
+        super.onAttach(context);
     }
 }
 ```
 
-A few things to note here:
-- We have added a `presenter` field with the `@Inject` annotation on top to let _Dagger_ know `MainPresenter` needs to be injected.
-- We create an instance of `MainModule` and pass the _View_ as a parameter in its constructor.
-- We build `DaggerMainComponent` and inject `MainFragment` with its dependencies (`MainPresenter` in this case).
-
 Conclusion
 ----------
 
-Now the `MainFragment` is ready to delegate all its events into the `MainPresenter` and rely on it to retrieve data from the _Model_. The _Presenter_ will make any decisions on how and when to update the View.
+Now `MainFragment` is ready to delegate all its events to `MainPresenter` and rely on it to retrieve data from the _Model_. The _Presenter_ will make any decisions on how and when to update the View.
 
 In my [next article](http://soflete.github.io/2016/04/07/Interactors-with-Retrofit-and-RxJava/) I explain how to create an _Interactor_ to retrieve data from an API and pass it on to the _Presenter_.
