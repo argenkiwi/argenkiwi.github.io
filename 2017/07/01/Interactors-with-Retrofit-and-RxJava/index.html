@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android: Interactors with Retrofit and RxJava | Binary Spells</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="In a previous article I described how to structure your application under the Model-View-Presenter architecture applying dependency injection with Dagger. I covered how to setup a View and its Present">
+<meta name="keywords" content="MVP,Retrofit,RxJava">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android: Interactors with Retrofit and RxJava">
+<meta property="og:url" content="http://soflete.github.io/2017/07/01/Interactors-with-Retrofit-and-RxJava/index.html">
+<meta property="og:site_name" content="Binary Spells">
+<meta property="og:description" content="In a previous article I described how to structure your application under the Model-View-Presenter architecture applying dependency injection with Dagger. I covered how to setup a View and its Present">
+<meta property="og:updated_time" content="2017-07-01T04:50:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android: Interactors with Retrofit and RxJava">
+<meta name="twitter:description" content="In a previous article I described how to structure your application under the Model-View-Presenter architecture applying dependency injection with Dagger. I covered how to setup a View and its Present">
+<meta name="twitter:creator" content="@soflete">
+<link rel="publisher" href="https://plus.google.com/114521903221329576323">
+  
+    <link rel="alternative" href="/atom.xml" title="Binary Spells" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-50425306-5', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Binary Spells</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">A blog about coding</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://soflete.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Interactors-with-Retrofit-and-RxJava" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/07/01/Interactors-with-Retrofit-and-RxJava/" class="article-date">
+  <time datetime="2017-07-01T03:24:55.000Z" itemprop="datePublished">2017-07-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Android: Interactors with Retrofit and RxJava
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>In a <a href="http://soflete.github.io/2016/04/01/Android-MVP-with-Dagger/">previous article</a> I described how to structure your application under the <em>Model-View-Presenter</em> architecture applying dependency injection with <a href="http://google.github.io/dagger/" target="_blank" rel="external">Dagger</a>. I covered how to setup a <em>View</em> and its <em>Presenter</em>. Today I would like to share with you how to use an <em>Interactor</em> to communicate the <em>Presenter</em> with the <em>Model</em>.</p>
+<h2 id="Setup"><a href="#Setup" class="headerlink" title="Setup"></a>Setup</h2><p>For this example, I am going to introduce <a href="http://square.github.io/retrofit/" target="_blank" rel="external">Retrofit</a>, a networking library that makes it easy to define endpoints from which to retrieve data from the network. Also, I will make use of <a href="https://github.com/ReactiveX/RxJava" target="_blank" rel="external">RxJava</a> (and <a href="https://github.com/ReactiveX/RxAndroid" target="_blank" rel="external">RxAndroid</a>) to handle asynchronous requests. Let’s begin by updating the dependencies in our application’s <code>build.gradle</code> file.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line">    ...</div><div class="line">    <span class="comment">// Retrofit</span></div><div class="line">    compile <span class="string">'com.squareup.retrofit2:retrofit:2.3.0'</span></div><div class="line">    compile <span class="string">'com.squareup.retrofit2:adapter-rxjava:2.3.0'</span></div><div class="line">    compile <span class="string">'com.squareup.retrofit2:converter-gson:2.3.0'</span></div><div class="line"></div><div class="line">    <span class="comment">// RxAndroid and RxJava</span></div><div class="line">    compile <span class="string">'io.reactivex.rxjava2:rxandroid:2.0.1'</span></div><div class="line">    compile <span class="string">'io.reactivex.rxjava2:rxjava:2.1.1'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>We added an <em>RxJava</em> adapter to enable <em>Retrofit</em> to return <code>Single</code> objects from its <em>Services</em>. We included the <em>Gson</em> converter only because the endpoint we are going to use in this example returns responses in the <em>JSON</em> format.</p>
+<h2 id="The-Retrofit-Service"><a href="#The-Retrofit-Service" class="headerlink" title="The Retrofit Service"></a>The Retrofit Service</h2><p>Let’s say we want to list the latest news from <a href="http://www.geonet.org.nz/" target="_blank" rel="external">Geonet</a>, a geological hazard monitoring system from New Zealand. The response we get from <a href="http://api.geonet.org.nz/news/geonet" target="_blank" rel="external">http://api.geonet.org.nz/news/geonet</a> looks similar to this:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"feed"</span>: [</div><div class="line">    &#123;</div><div class="line">      <span class="attr">"title"</span>: <span class="string">"February 2016 landslides"</span>,</div><div class="line">      <span class="attr">"published"</span>: <span class="string">"2016-03-22T02:38:15Z"</span>,</div><div class="line">      <span class="attr">"link"</span>: <span class="string">"http://info.geonet.org.nz/display/slide/2016/03/22/February+2016+landslides"</span>,</div><div class="line">      <span class="attr">"mlink"</span>: <span class="string">"http://info.geonet.org.nz/m/view-rendered-page.action?abstractPageId=17039668"</span></div><div class="line">    &#125;,</div><div class="line">    ...</div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>So let’s create a class to represent a <em>News Story</em>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NewsStory</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@SerializedName</span>(<span class="string">"title"</span>)</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String title;</div><div class="line"></div><div class="line">    <span class="meta">@SerializedName</span>(<span class="string">"published"</span>)</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Date published;</div><div class="line"></div><div class="line">    <span class="meta">@SerializedName</span>(<span class="string">"mlink"</span>)</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String url;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NewsStory</span><span class="params">(String title, Date published, String url)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.title = title;</div><div class="line">        <span class="keyword">this</span>.published = published;</div><div class="line">        <span class="keyword">this</span>.url = url;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getTitle</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> title;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Date <span class="title">getPublished</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> published;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUrl</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> url;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>And another one to represent the response from the service which contains the news feed.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NewsGeonetResponse</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@SerializedName</span>(<span class="string">"feed"</span>)</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> NewsStory[] newsStories;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">NewsGeonetResponse</span><span class="params">(NewsStory[] newsStories)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.newsStories = newsStories;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> NewsStory[] getNewsStories() &#123;</div><div class="line">        <span class="keyword">return</span> newsStories;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>We are now ready to define our <em>Service</em>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GeonetService</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@GET</span>(<span class="string">"news/geonet"</span>)</div><div class="line">    <span class="function">Single&lt;NewsGeonetResponse&gt; <span class="title">getNews</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="The-Interactor"><a href="#The-Interactor" class="headerlink" title="The Interactor"></a>The Interactor</h2><p>To shield our <em>Presenter</em> from the specifics of <em>Retrofit</em> we are going to create an <em>Interactor</em>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GetNewsInteractor</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> GeonetService service;</div><div class="line">    <span class="keyword">private</span> Disposable disposable;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GetNewsInteractor</span><span class="params">(GeonetService service)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.service = service;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(</span></span></div><div class="line">            Consumer&lt;? <span class="keyword">super</span> NewsGeonetResponse&gt; onSuccess,</div><div class="line">            Consumer&lt;? <span class="keyword">super</span> Throwable&gt; onError</div><div class="line">    ) &#123;</div><div class="line">        disposable = service.getNews()</div><div class="line">                .subscribeOn(Schedulers.io())</div><div class="line">                .observeOn(AndroidSchedulers.mainThread())</div><div class="line">                .subscribe(onSuccess, onError);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancel</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (disposable != <span class="keyword">null</span>) disposable.dispose();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>GetNewsInteractor</code> executes a request on a separate thread and returns its response into the main thread (or UI thread). It also holds a subscription to the request that can be canceled at any time.</p>
+<p>Let’s add a reference to <code>GetNewsInteractor</code> into our <em>Presenter</em>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainPresenter</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> MainView view;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> GetNewsInteractor interactor;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MainPresenter</span><span class="params">(MainView view, GetNewsInteractor interactor)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.view = view;</div><div class="line">        <span class="keyword">this</span>.interactor = interactor;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Dependency-Injection"><a href="#Dependency-Injection" class="headerlink" title="Dependency Injection"></a>Dependency Injection</h2><p><code>GetNewsInteractor</code> needs to be provided to <code>MainPresenter</code> by its <em>Module</em>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Module</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainModule</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> MainView view;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MainModule</span><span class="params">(MainView view)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.view = view;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Provides</span></div><div class="line">    <span class="function"><span class="keyword">public</span> GetNewsInteractor <span class="title">provideInteractor</span><span class="params">(GeonetService service)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> GetNewsInteractor(service);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Provides</span></div><div class="line">    <span class="function"><span class="keyword">public</span> MainPresenter <span class="title">providePresenter</span><span class="params">(GetNewsInteractor interactor)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MainPresenter(view, interactor);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>MainPresenter</code> is injected with <code>GetNewsInteractor</code>. But to be able to inject <code>GeonetService</code> to <code>GetNewsInteractor</code> we need to convert <code>MainComponent</code> into a <em>Subcomponent</em> of <code>ApplicationComponent</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Subcomponent</span> (modules = MainModule.class)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MainComponent</span> <span class="keyword">extends</span> <span class="title">AndroidInjector</span>&lt;<span class="title">MainFragment</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Subcomponent</span>.Builder</div><div class="line">    <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> <span class="keyword">extends</span> <span class="title">AndroidInjector</span>.<span class="title">Builder</span>&lt;<span class="title">MainFragment</span>&gt; </span>&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>We need to provide an injector for our <em>Fragment</em>. Let’s create a module for that which <code>ApplicationComponent</code> can use:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Module</span>(subcomponents = MainComponent.class)</div><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">InjectorsModule</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Binds</span></div><div class="line">    <span class="meta">@IntoMap</span></div><div class="line">    <span class="meta">@FragmentKey</span>(MainFragment.class)</div><div class="line">    <span class="keyword">abstract</span> AndroidInjector.Factory&lt;? extends Fragment&gt; mainFragmentInjector(MainComponent.Builder builder);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Also, we want <code>GeonetService</code> to be available throughout the application. Let’s create a Module to provide it.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Module</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ApplicationModule</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Provides</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Gson <span class="title">provideGson</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> GsonBuilder().setDateFormat(<span class="string">"yyyy-MM-dd'T'HH:mm:ssz"</span>).create();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Provides</span></div><div class="line">    <span class="function"><span class="keyword">public</span> Retrofit <span class="title">provideRetrofit</span><span class="params">(Gson gson)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Retrofit.Builder()</div><div class="line">                .baseUrl(<span class="string">"http://api.geonet.org.nz/"</span>)</div><div class="line">                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())</div><div class="line">                .addConverterFactory(GsonConverterFactory.create(gson))</div><div class="line">                .build();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Provides</span></div><div class="line">    <span class="function"><span class="keyword">public</span> GeonetService <span class="title">provideGeonetService</span><span class="params">(Retrofit retrofit)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> retrofit.create(GeonetService.class);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Next, we need to expose the injector and the service through the application’s <em>Component</em>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Singleton</span></div><div class="line"><span class="meta">@Component</span>(modules = &#123;</div><div class="line">        ApplicationModule.class,</div><div class="line">        AndroidInjectionModule.class,</div><div class="line">        InjectorsModule.class</div><div class="line">&#125;)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ApplicationComponent</span> <span class="keyword">extends</span> <span class="title">AndroidInjector</span>&lt;<span class="title">MyApplication</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Component</span>.Builder</div><div class="line">    <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> <span class="keyword">extends</span> <span class="title">AndroidInjector</span>.<span class="title">Builder</span>&lt;<span class="title">MyApplication</span>&gt; </span>&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>In order to make the <code>ApplicationComponent</code> available throughout our application, we need to build it when the Application is created.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> <span class="keyword">implements</span> <span class="title">HasSupportFragmentInjector</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Inject</span></div><div class="line">    DispatchingAndroidInjector&lt;Fragment&gt; fragmentDispatchingAndroidInjector;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate();</div><div class="line">        DaggerApplicationComponent.builder().create(<span class="keyword">this</span>).inject(<span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> AndroidInjector&lt;Fragment&gt; <span class="title">supportFragmentInjector</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> fragmentDispatchingAndroidInjector;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Don’t forget to add <code>MyApplication</code> as the <code>name</code> attribute of the <code>application</code> element in <code>AndroidManifest.xml</code>.</p>
+<p>Finally, we need to update <code>MainFragment</code> so it is injected by the appropriate injector.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainFragment</span> <span class="keyword">extends</span> <span class="title">Fragment</span> <span class="keyword">implements</span> <span class="title">MainView</span> </span>&#123;</div><div class="line">    </div><div class="line">    <span class="meta">@Inject</span></div><div class="line">    MainPresenter presenter;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAttach</span><span class="params">(Context context)</span> </span>&#123;</div><div class="line">        AndroidSupportInjection.inject(<span class="keyword">this</span>);</div><div class="line">        <span class="keyword">super</span>.onAttach(context);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>At this stage, <code>MainPresenter</code> can communicate with <code>MainView</code> and <code>GetNewsInteractor</code>. In an <a href="http://soflete.github.io/2016/04/10/Android-Unit-Testing-Presenters/">upcoming example</a> I will explain how I apply <em>Test Driven Development (TDD)</em> to define the behavior of the <code>MainPresenter</code> while I write a full set of Unit Tests for it.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://soflete.github.io/2017/07/01/Interactors-with-Retrofit-and-RxJava/" data-id="cj4klgcy70007bfwi8iugsf6e" class="article-share-link">Share</a>
+      
+        <a href="http://soflete.github.io/2017/07/01/Interactors-with-Retrofit-and-RxJava/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MVP/">MVP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Retrofit/">Retrofit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RxJava/">RxJava</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/07/01/Android-Unit-Testing-Presenters/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Android: Unit Testing Presenters
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/07/01/Android-MVP-with-Dagger/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Android: MVP with Dagger</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dagger/">Dagger</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MVP/">MVP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Retrofit/">Retrofit</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RxJava/">RxJava</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TDD/">TDD</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unit-Testing/">Unit Testing</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/Dagger/" style="font-size: 10px;">Dagger</a> <a href="/tags/MVP/" style="font-size: 20px;">MVP</a> <a href="/tags/Retrofit/" style="font-size: 10px;">Retrofit</a> <a href="/tags/RxJava/" style="font-size: 10px;">RxJava</a> <a href="/tags/TDD/" style="font-size: 10px;">TDD</a> <a href="/tags/Unit-Testing/" style="font-size: 10px;">Unit Testing</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/07/01/Android-Unit-Testing-Presenters/">Android: Unit Testing Presenters</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/01/Interactors-with-Retrofit-and-RxJava/">Android: Interactors with Retrofit and RxJava</a>
+          </li>
+        
+          <li>
+            <a href="/2017/07/01/Android-MVP-with-Dagger/">Android: MVP with Dagger</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Leandro Peralta<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'binaryspells';
+  
+  var disqus_url = 'http://soflete.github.io/2017/07/01/Interactors-with-Retrofit-and-RxJava/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
