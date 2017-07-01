@@ -158,7 +158,7 @@ public class MainPresenter {
 Dependency Injection
 --------------------
 
-`GetNewsInteractor` needs to be provided to `MainPresenter` by its _Module_.
+Start by letting `GetNewsInteractor` be provided to `MainPresenter` by its _Module_.
 
 ```Java
 @Module
@@ -181,8 +181,37 @@ public class MainModule {
     }
 }
 ```
+Then, create a module which provides `GeonetService` and its dependencies:
 
-`MainPresenter` is injected with `GetNewsInteractor`. But to be able to inject `GeonetService` to `GetNewsInteractor` we need to convert `MainComponent` into a _Subcomponent_ of `ApplicationComponent`.
+```Java
+@Module
+public abstract class ServicesModule {
+
+    @Singleton
+    @Provides
+    public static Gson provideGson(){
+        return new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssz").create();
+    }
+
+    @Singleton
+    @Provides
+    public static Retrofit provideRetrofit(Gson gson){
+        return new Retrofit.Builder()
+                .baseUrl("http://api.geonet.org.nz/")
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+    }
+
+    @Singleton
+    @Provides
+    public static GeonetService provideGeonetService(Retrofit retrofit){
+        return retrofit.create(GeonetService.class);
+    }
+}
+```
+
+To be able to inject `GeonetService` to `GetNewsInteractor` we need to convert `MainComponent` into a _Subcomponent_ of `ApplicationComponent`.
 
 ```Java
 @Subcomponent (modules = MainModule.class)
@@ -193,7 +222,8 @@ public interface MainComponent extends AndroidInjector<MainFragment> {
     }
 }
 ```
-We need to provide an injector for our _Fragment_. Let's create a module for that which `ApplicationComponent` can use:
+
+We have to provide an _Injector_ for our _Fragment_. Let's create a module which `ApplicationComponent` can reference:
 
 ```Java
 @Module(subcomponents = MainComponent.class)
@@ -206,41 +236,14 @@ public abstract class InjectorsModule {
 }
 ```
 
-Also, we want `GeonetService` to be available throughout the application. Let's create a Module to provide it.
-
-```Java
-@Module
-public class ApplicationModule {
-
-    @Provides
-    public Gson provideGson(){
-        return new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssz").create();
-    }
-
-    @Provides
-    public Retrofit provideRetrofit(Gson gson){
-        return new Retrofit.Builder()
-                .baseUrl("http://api.geonet.org.nz/")
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-    }
-
-    @Provides
-    public GeonetService provideGeonetService(Retrofit retrofit){
-        return retrofit.create(GeonetService.class);
-    }
-}
-```
-
-Next, we need to expose the injector and the service through the application's _Component_.
+Now we can expose the _Injector_ and the _Service_ through `ApplicationComponent`.
 
 ```Java
 @Singleton
 @Component(modules = {
-        ApplicationModule.class,
         AndroidInjectionModule.class,
-        InjectorsModule.class
+        InjectorsModule.class,
+        ServicesModule.class
 })
 public interface ApplicationComponent extends AndroidInjector<MyApplication> {
 
@@ -250,7 +253,7 @@ public interface ApplicationComponent extends AndroidInjector<MyApplication> {
 }
 ```
 
-In order to make the `ApplicationComponent` available throughout our application, we need to build it when the Application is created.
+In order to make `ApplicationComponent` available from our _Application_ instance, we need to build it when our _Application_ is created.
 
 ```Java
 public class MyApplication extends Application implements HasSupportFragmentInjector {
