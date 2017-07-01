@@ -12,7 +12,7 @@
 <meta property="og:url" content="http://soflete.github.io/2017/07/01/Android-Unit-Testing-Presenters/index.html">
 <meta property="og:site_name" content="Binary Spells">
 <meta property="og:description" content="This is the third post of a series. In the first post I demonstrate how to setup the View and the Presenter of a Model-View-Presenter architecture using dependency injection. In the second post I desc">
-<meta property="og:updated_time" content="2017-07-01T05:52:19.505Z">
+<meta property="og:updated_time" content="2017-07-01T06:00:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android: Unit Testing Presenters">
 <meta name="twitter:description" content="This is the third post of a series. In the first post I demonstrate how to setup the View and the Presenter of a Model-View-Presenter architecture using dependency injection. In the second post I desc">
@@ -102,7 +102,7 @@ ga('send', 'pageview');
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>This is the third post of a series. In the <a href="http://soflete.github.io/2016/04/01/Android-MVP-with-Dagger/">first post</a> I demonstrate how to setup the <em>View</em> and the <em>Presenter</em> of a <em>Model-View-Presenter</em> architecture using <em>dependency injection</em>. In the <a href="http://soflete.github.io/2016/04/07/Interactors-with-Retrofit-and-RxJava/">second post</a> I describe how to put together an <em>Interactor</em> and inject it into the <em>Presenter</em>.</p>
+        <p>This is the third post of a series. In the <a href="http://soflete.github.io/2017/07/01/Android-MVP-with-Dagger/">first post</a> I demonstrate how to setup the <em>View</em> and the <em>Presenter</em> of a <em>Model-View-Presenter</em> architecture using <em>dependency injection</em>. In the <a href="http://soflete.github.io/2017/07/01/Interactors-with-Retrofit-and-RxJava/">second post</a> I describe how to put together an <em>Interactor</em> and inject it into the <em>Presenter</em>.</p>
 <p>In this post I would like to show you how I apply <em>TDD (Test Driven Development)</em> to define and implement the interactions of the <em>Presenter</em> with the <em>View</em> and the <em>Interactor</em>.</p>
 <h2 id="Setup"><a href="#Setup" class="headerlink" title="Setup"></a>Setup</h2><p>In order to execute Unit Tests in <em>Android Studio</em> you need to make sure you have a <code>src/test</code> folder. Also, you need to include dependencies on <em>JUnit</em> and <em>Mockito</em> in your application’s <code>build.gradle</code> file.</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line">    ...</div><div class="line">    testCompile <span class="string">'junit:junit:4.12'</span>                      </div><div class="line">    testCompile <span class="string">'org.mockito:mockito-core:2.8.47'</span> </div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -138,7 +138,7 @@ ga('send', 'pageview');
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://soflete.github.io/2017/07/01/Android-Unit-Testing-Presenters/" data-id="cj4klgcy50005bfwi6fwmzxak" class="article-share-link">Share</a>
+      <a data-url="http://soflete.github.io/2017/07/01/Android-Unit-Testing-Presenters/" data-id="cj4kvpuun0001xvwiqpn1fj8c" class="article-share-link">Share</a>
       
         <a href="http://soflete.github.io/2017/07/01/Android-Unit-Testing-Presenters/#disqus_thread" class="article-comment-link">Comments</a>
       
