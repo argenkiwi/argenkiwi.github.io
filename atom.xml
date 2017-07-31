@@ -65,11 +65,11 @@
     
       <category term="Android" scheme="http://soflete.github.io/tags/Android/"/>
     
-      <category term="MVP" scheme="http://soflete.github.io/tags/MVP/"/>
-    
       <category term="Unit Testing" scheme="http://soflete.github.io/tags/Unit-Testing/"/>
     
       <category term="TDD" scheme="http://soflete.github.io/tags/TDD/"/>
+    
+      <category term="MVP" scheme="http://soflete.github.io/tags/MVP/"/>
     
   </entry>
   
