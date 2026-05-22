@@ -10,12 +10,12 @@
 # SITE SETTINGS
 title: Binary Spells
 author: Leandro Peralta
-email: your-email@example.com
+email: argenkiwi@hotmai.com
 description: >- # this means to ignore newlines until "baseurl:"
   A blog about coding.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://argenkiwi.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: soflete
+twitter_username: argenkiwi
 github_username: argenkiwi
 
 # Build settings
