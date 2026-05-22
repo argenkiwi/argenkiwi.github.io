@@ -20,6 +20,8 @@ github_username: argenkiwi
 
 # Build settings
 theme: minima
+future: true
+timezone: Pacific/Auckland
 plugins:
   - jekyll-feed
 
