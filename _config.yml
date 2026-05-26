@@ -19,7 +19,7 @@ twitter_username: argenkiwi
 github_username: argenkiwi
 
 # Build settings
-theme: minima
+theme: jekyll-theme-minimal
 future: true
 timezone: Pacific/Auckland
 plugins:
