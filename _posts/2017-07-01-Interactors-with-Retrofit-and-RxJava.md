@@ -5,11 +5,11 @@ date: 2017-07-01 03:24:55 +0000
 tags: [MVP, Retrofit, RxJava]
 ---
 
-In a [previous article]({% post_url 2017-07-01-Android-MVP-with-Dagger %}) I described how to structure your application under the *Model-View-Presenter* architecture applying dependency injection with [Dagger](http://google.github.io/dagger/). I covered how to setup a *View* and its *Presenter*. Today I would like to share with you how to use an *Interactor* to communicate the *Presenter* with the *Model*.
+In a [previous article]({% post_url 2017-07-01-Android-MVP-with-Dagger %}) I described how to structure your application under the *Model-View-Presenter* architecture applying dependency injection with [Dagger](https://google.github.io/dagger/). I covered how to setup a *View* and its *Presenter*. Today I would like to share with you how to use an *Interactor* to communicate the *Presenter* with the *Model*.
 
 ## Setup
 
-For this example, I am going to introduce [Retrofit](http://square.github.io/retrofit/), a networking library that makes it easy to define endpoints from which to retrieve data from the network. Also, I will make use of [RxJava](https://github.com/ReactiveX/RxJava) (and [RxAndroid](https://github.com/ReactiveX/RxAndroid)) to handle asynchronous requests. Let’s begin by updating the dependencies in our application’s `build.gradle` file.
+For this example, I am going to introduce [Retrofit](https://square.github.io/retrofit/), a networking library that makes it easy to define endpoints from which to retrieve data from the network. Also, I will make use of [RxJava](https://github.com/ReactiveX/RxJava) (and [RxAndroid](https://github.com/ReactiveX/RxAndroid)) to handle asynchronous requests. Let’s begin by updating the dependencies in our application’s `build.gradle` file.
 
 ```java
 dependencies {
@@ -29,7 +29,7 @@ We added an *RxJava* adapter to enable *Retrofit* to return `Single` objects fro
 
 ## The Retrofit Service
 
-Let’s say we want to list the latest news from [Geonet](http://www.geonet.org.nz/), a geological hazard monitoring system from New Zealand. The response we get from [http://api.geonet.org.nz/news/geonet](http://api.geonet.org.nz/news/geonet) looks similar to this:
+Let’s say we want to list the latest news from [Geonet](https://www.geonet.org.nz/), a geological hazard monitoring system from New Zealand. The response we get from [https://api.geonet.org.nz/news/geonet](https://api.geonet.org.nz/news/geonet) looks similar to this:
 
 ```json
 {
