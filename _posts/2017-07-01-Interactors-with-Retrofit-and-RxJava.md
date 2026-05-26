@@ -5,7 +5,7 @@ date: 2017-07-01 03:24:55 +0000
 tags: [MVP, Retrofit, RxJava]
 ---
 
-In a [previous article](http://soflete.github.io/2017/07/01/Android-MVP-with-Dagger/) I described how to structure your application under the *Model-View-Presenter* architecture applying dependency injection with [Dagger](http://google.github.io/dagger/). I covered how to setup a *View* and its *Presenter*. Today I would like to share with you how to use an *Interactor* to communicate the *Presenter* with the *Model*.
+In a [previous article]({% post_url 2017-07-01-Android-MVP-with-Dagger %}) I described how to structure your application under the *Model-View-Presenter* architecture applying dependency injection with [Dagger](http://google.github.io/dagger/). I covered how to setup a *View* and its *Presenter*. Today I would like to share with you how to use an *Interactor* to communicate the *Presenter* with the *Model*.
 
 ## Setup
 
@@ -289,4 +289,4 @@ public class MainFragment extends Fragment implements MainView {
 }
 ```
 
-At this stage, `MainPresenter` can communicate with `MainView` and `GetNewsInteractor`. In an [upcoming example](http://soflete.github.io/2017/07/01/Android-Unit-Testing-Presenters/) I will explain how I apply *Test Driven Development (TDD)* to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.
+At this stage, `MainPresenter` can communicate with `MainView` and `GetNewsInteractor`. In an [upcoming example]({% post_url 2017-07-01-Android-Unit-Testing-Presenters %}) I will explain how I apply *Test Driven Development (TDD)* to define the behavior of the `MainPresenter` while I write a full set of Unit Tests for it.

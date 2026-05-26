@@ -97,4 +97,4 @@ public class MainFragment extends Fragment implements MainView {
 
 Now `MainFragment` is ready to delegate all its events to `MainPresenter` and rely on it to retrieve data from the *Model*. The *Presenter* will make any decisions on how and when to update the View.
 
-In my [next article](http://soflete.github.io/2017/07/01/Interactors-with-Retrofit-and-RxJava/) I explain how to create an *Interactor* to retrieve data from an API and pass it on to the *Presenter*.
+In my [next article]({% post_url 2017-07-01-Interactors-with-Retrofit-and-RxJava %}) I explain how to create an *Interactor* to retrieve data from an API and pass it on to the *Presenter*.
