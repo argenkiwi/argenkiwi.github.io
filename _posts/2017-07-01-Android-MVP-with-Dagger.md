@@ -3,6 +3,7 @@ layout: post
 title: "Android: MVP with Dagger"
 date: 2017-07-01 02:44:01 +0000
 tags: [Android, MVP, Dagger]
+categories: [Android]
 ---
 
 The *Model-View-Presenter* pattern for software architecture helps to separate concerns in an application. In this article I intend to show you how I apply this pattern by using [Dagger](https://google.github.io/dagger/) for dependency injection.

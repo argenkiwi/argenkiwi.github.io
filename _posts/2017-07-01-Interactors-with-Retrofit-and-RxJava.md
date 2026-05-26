@@ -3,6 +3,7 @@ layout: post
 title: "Android: Interactors with Retrofit and RxJava"
 date: 2017-07-01 03:24:55 +0000
 tags: [MVP, Retrofit, RxJava]
+categories: [Android]
 ---
 
 In a [previous article]({% post_url 2017-07-01-Android-MVP-with-Dagger %}) I described how to structure your application under the *Model-View-Presenter* architecture applying dependency injection with [Dagger](https://google.github.io/dagger/). I covered how to setup a *View* and its *Presenter*. Today I would like to share with you how to use an *Interactor* to communicate the *Presenter* with the *Model*.

@@ -3,6 +3,7 @@ layout: post
 title: "Android: Unit Testing Presenters"
 date: 2017-07-01 04:53:37 +0000
 tags: [Android, MVP, Unit Testing, TDD]
+categories: [Android]
 ---
 
 This is the third post of a series. In the [first post]({% post_url 2017-07-01-Android-MVP-with-Dagger %}) I demonstrate how to setup the *View* and the *Presenter* of a *Model-View-Presenter* architecture using *dependency injection*. In the [second post]({% post_url 2017-07-01-Interactors-with-Retrofit-and-RxJava %}) I describe how to put together an *Interactor* and inject it into the *Presenter*.

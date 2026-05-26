@@ -3,6 +3,7 @@ layout: post
 title: "Home Row Modifiers with Kanata"
 date: 2026-05-26
 tags: [Kanata, Keyboard, Home Row Modifiers, Kenkyo]
+categories: [Kenkyo]
 ---
 
 Home row modifiers are a popular technique for reducing finger movement: modifier keys like Shift, Ctrl, or Alt are assigned to the home row keys (A, S, D, F, etc.) as hold actions, while their regular characters are emitted on tap. The challenge is making this feel natural — avoiding accidental modifier triggers while typing at speed, and keeping modifiers responsive when you actually need them.

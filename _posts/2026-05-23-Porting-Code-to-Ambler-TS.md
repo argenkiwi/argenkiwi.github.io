@@ -3,6 +3,7 @@ layout: post
 title: "Porting Code to Ambler TS: The Quickest Way"
 date: 2026-05-23
 tags: [Ambler TS, Git, AI, Development]
+categories: [Ambler]
 ---
 
 The quickest way to port code from a Git repository into Ambler TS is to include it as a Git submodule and leverage Ambler's agentic skills. In this guide, we'll use the [PocketFlow cookbook](https://github.com/The-Pocket/PocketFlow) as an example of how to streamline this process.
