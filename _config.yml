@@ -39,7 +39,7 @@ theme_mode: # [light | dark]
 
 cdn:
 
-avatar: /assets/img/avatar.png
+avatar: /assets/img/avatar.jpg
 
 toc: true
 
