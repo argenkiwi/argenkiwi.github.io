@@ -37,9 +37,9 @@ A **chord** occurs when two or more keys are pressed down simultaneously within 
 In a **Thumb Chord**, the trigger is a combination of a **primary thumb key** (such as `Space` on an ANSI keyboard or a dedicated thumb cluster key on an ergo board) pressed simultaneously with an **alpha key on the home row**.
 
 For example:
-- `Space + D` $\rightarrow$ Activates `Shift`
-- `Space + F` $\rightarrow$ Activates `Control` / `AltGr`
-- `Space + S` $\rightarrow$ Activates `Alt` / Symbol Layer
+- `Space + D` &rarr; Activates `Shift`
+- `Space + F` &rarr; Activates `Control` / `AltGr`
+- `Space + S` &rarr; Activates `Alt` / Symbol Layer
 
 Because thumb actuation is distinct from home-row finger typing, triggering a chord is a conscious, deliberate gesture that is virtually impossible to execute accidentally during normal key rolls.
 
